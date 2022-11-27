@@ -107,3 +107,9 @@ This is also possible for tables and sections. Same princip but with
 All default pandoc features are supported with the extend of mathjax and pandoc-xnos.
 ![caption](/img/3a2ce07d2109eb82f779f71748be8990.webp)
 ![caption](/img/pixil-frame-07165101.png)
+
+# Wikilinks
+
+You can add a link like the one below and see it work
+
+[[test]]

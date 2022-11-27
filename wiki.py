@@ -20,6 +20,7 @@ from git_manager import WikiRepoManager
 from search import Search, Watchdog
 from web_dependencies import get_web_deps
 
+from wikilink_handler import quick_handle_text
 
 SESSIONS = []
 
@@ -177,6 +178,7 @@ def file_page(file_page):
             app.logger.info(f"Converting to HTML with pandoc >>> '{md_file_path}' ...")
             html = pypandoc.convert_file(md_file_path, "html5",
                                          format='md', extra_args=["--mathjax"], filters=['pandoc-xnos'])
+            html = quick_handle_text(cfg.wiki_directory, html)
             html = clean_html(html)
             cache.set(md_file_path, html)
 
@@ -209,6 +211,7 @@ def index():
             html = pypandoc.convert_file(
                 md_file_path, "html5", format='md', extra_args=["--mathjax"],
                 filters=['pandoc-xnos'])
+            html = quick_handle_text(cfg.wiki_directory, html)
             html = clean_html(html)
             cache.set(md_file_path, html)
 
