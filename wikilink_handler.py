@@ -11,6 +11,9 @@ class WikilinkConverter:
   def get_link_name(self, filename):
     if filename[-3:] == ".md":
       return filename[:-3]
+    elif filename[-4:] == ".png":
+      print(filename)
+      return filename
     else:
       return None
 
@@ -35,6 +38,12 @@ class WikilinkConverter:
           if self.mapping.get(linkname) == None:
             self.mapping[linkname] = []
           self.mapping[linkname].append(webpath)
+          
+          # Extra path
+          other_path = f"{webpath}"
+          if self.mapping.get(other_path) == None:
+            self.mapping[other_path] = []
+          self.mapping[other_path].append(webpath)  
 
   ### Replacing ########################################################
   def replace_wikilink(self, link):
@@ -44,9 +53,9 @@ class WikilinkConverter:
     elif len(data) == 2:
       link, name = data
     
-    print(link, name, len(data))
+    #print(link, name, len(data))
     if self.mapping.get(link) == None or len(self.mapping[link]) == 0:
-      return f"<a href=''>{name}</a>"
+      return f"<a href='{link}'>{name}</a>"
     
     if len(self.mapping[link]) == 1:
       web_path = self.mapping[link][0]
@@ -60,6 +69,31 @@ class WikilinkConverter:
       output += f"<a href='{web_path}'>{i+1}</a>"
     return f"<span>[{name} - {output}]</span>"
 
+  def replace_wikilink_image(self, link):
+    data = link[3:-2].split("|")
+    if len(data) == 1:
+      link, name = data[0], data[0]
+    elif len(data) == 2:
+      link, name = data
+    
+    #print(link, name, len(data))
+    if self.mapping.get(link) == None or len(self.mapping[link]) == 0:
+      return f"<img src=\"{link}\" alt=\"{name}\" >"
+    ## Multiple wikilinks
+    output = ""
+    for i in range(len(self.mapping[link])):
+      web_path = self.mapping[link][i]
+      if i != 0: output += ","
+      output += f"<img src=\"{web_path}\" alt=\"{name}\" >"
+    print(link, output)
+    return output
+    
+  def handle_images(self, text):
+    wikilinks = re.findall("(!\[\[.+?\]\])",text)
+    for wikilink in wikilinks:
+      text = text.replace(wikilink, self.replace_wikilink_image(wikilink))
+    return text
+    
   def handle_text(self, text):
     wikilinks = re.findall("(\[\[.+?\]\])",text)
     for wikilink in wikilinks:
@@ -69,9 +103,8 @@ class WikilinkConverter:
 def quick_handle_text(path, text):
   wkc = WikilinkConverter(path)
   wkc.generate_mapping()
-  return wkc.handle_text(text)
+  #print(wkc.mapping)
+  return wkc.handle_text(wkc.handle_images(text))
   
 if __name__ == "__main__":
-  wkc = WikilinkConverter("wikmd")
-  wkc.generate_mapping()
-  print(wkc.handle_text("README  [[README]] [[README|help]] [[TOD]] [[TODO]]"))
+  print(quick_handle_text("wiki", "README  [[README]] [[README|help]] [[TOD]] [[TODO]] ![[image.png]] ![[image-hslghgilu6we45v6nwrn5igc3mkn.png]]"))

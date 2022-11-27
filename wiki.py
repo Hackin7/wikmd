@@ -149,6 +149,15 @@ def list_wiki(folderpath):
 
 @app.route('/<path:file_page>', methods=['GET'])
 def file_page(file_page):
+    ### Image File Case - can be done better
+    if len(file_page) > 4 and file_page[-4:] == ".png":
+      image_path = safe_join(cfg.wiki_directory, file_page)
+      app.logger.info(f"Showing image >>> '{image_path}'")
+      response = send_file(image_path)
+      # cache indefinitely
+      response.headers["Cache-Control"] = "max-age=31536000, immutable"
+      return response
+    ### Remaining Editing Case
     if request.args.get("q"):
         return search(request.args.get("q"), request.args.get("page", 1))
     else:
@@ -176,9 +185,11 @@ def file_page(file_page):
 
         try:
             app.logger.info(f"Converting to HTML with pandoc >>> '{md_file_path}' ...")
-            html = pypandoc.convert_file(md_file_path, "html5",
+            with open(md_file_path, 'r') as f:
+              text = f.read()
+            text = quick_handle_text(cfg.wiki_directory, text)
+            html = pypandoc.convert_text(text, "html5",
                                          format='md', extra_args=["--mathjax"], filters=['pandoc-xnos'])
-            html = quick_handle_text(cfg.wiki_directory, html)
             html = clean_html(html)
             cache.set(md_file_path, html)
 
@@ -208,10 +219,12 @@ def index():
 
         try:
             app.logger.info("Converting to HTML with pandoc >>> 'homepage' ...")
-            html = pypandoc.convert_file(
-                md_file_path, "html5", format='md', extra_args=["--mathjax"],
+            with open(md_file_path, 'r') as f:
+              text = f.read()
+            text = quick_handle_text(cfg.wiki_directory, text)
+            html = pypandoc.convert_text(text, "html5",
+                format='md', extra_args=["--mathjax"],
                 filters=['pandoc-xnos'])
-            html = quick_handle_text(cfg.wiki_directory, html)
             html = clean_html(html)
             cache.set(md_file_path, html)
 
