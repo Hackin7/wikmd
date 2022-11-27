@@ -4,6 +4,14 @@
 
 ![preview](static/images/wiki.gif)
 
+## Additional Features
+
+This is a fork created by Hackin7, meant to add features to make it interoperable with Obsidian.
+These features are added
+
+1. WikiLinks - `[[file]]` and `[[file|name]]` wikilink formats work
+2. Image Wikilinks - `![[Image]]` links to the correct path
+
 ## What is it?
 It’s a file-based wiki that aims to simplicity. The documents are completely written in Markdown which is an easy markup language that you can learn in 60 sec.
 
