@@ -48,7 +48,7 @@ class WikilinkConverter:
   ### Replacing ########################################################
   def replace_wikilink(self, link):
     data = link[2:-2].split("|")
-    link = name
+    name = link
     if len(data) == 1:
       link, name = data[0], data[0]
     elif len(data) >= 2:
