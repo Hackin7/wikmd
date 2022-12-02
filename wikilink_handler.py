@@ -55,18 +55,21 @@ class WikilinkConverter:
     
     #print(link, name, len(data))
     if self.mapping.get(link) == None or len(self.mapping[link]) == 0:
-      return f"<a href='{link}'>{name}</a>"
+      return f"[{name}]({link})</a>"
+      #return f"<a href='{link}'>{name}</a>"
     
     if len(self.mapping[link]) == 1:
       web_path = self.mapping[link][0]
-      return f"<a href='{web_path}'>{name}</a>"
+      #return f"<a href='{web_path}'>{name}</a>"
+      return f"[{name}]({web_path})</a>"
     
     ## Multiple wikilinks
     output = ""
     for i in range(len(self.mapping[link])):
       web_path = self.mapping[link][i]
       if i != 0: output += ","
-      output += f"<a href='{web_path}'>{i+1}</a>"
+      #output += f"<a href='{web_path}'>{i+1}</a>"
+      output += f"[{i+1}]({web_path})</a>"
     return f"<span>[{name} - {output}]</span>"
 
   def replace_wikilink_image(self, link):
@@ -78,13 +81,15 @@ class WikilinkConverter:
     
     #print(link, name, len(data))
     if self.mapping.get(link) == None or len(self.mapping[link]) == 0:
-      return f"<img src=\"{link}\" alt=\"{name}\" >"
+      #return f"<img src=\"{link}\" alt=\"{name}\" >"
+      return f"![{name}]({link})"
     ## Multiple wikilinks
     output = ""
     for i in range(len(self.mapping[link])):
       web_path = self.mapping[link][i]
       if i != 0: output += ","
-      output += f"<img src=\"{web_path}\" alt=\"{name}\" >"
+      #output += f"<img src=\"{web_path}\" alt=\"{name}\" >"
+      output += f"![{name}]({web_path})"
     print(link, output)
     return output
     

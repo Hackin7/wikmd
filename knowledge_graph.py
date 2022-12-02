@@ -3,6 +3,7 @@ import re
 from urllib.parse import unquote
 
 from config import WikmdConfig
+from wikilink_handler import quick_handle_text
 
 cfg = WikmdConfig()
 
@@ -42,6 +43,7 @@ def find_links():
                 continue
             with open(os.path.join(root, item), encoding="utf8", errors='ignore') as f:
                 fin = f.read()
+                fin = quick_handle_text(cfg.wiki_directory, fin)
                 print("--------------------")
                 print("filename: ", pagename)
                 try:
