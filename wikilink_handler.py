@@ -51,8 +51,11 @@ class WikilinkConverter:
     name = link
     if len(data) == 1:
       link, name = data[0], data[0]
-    elif len(data) >= 2:
+    elif len(data) == 2:
       link, name = data
+    elif len(data) > 2:
+      link = data[0]
+      name = '|'.join(data[1:])
     
     #print(link, name, len(data))
     if self.mapping.get(link) == None or len(self.mapping[link]) == 0:
