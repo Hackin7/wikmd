@@ -121,16 +121,16 @@ def list_wiki(folderpath):
                 continue
 
             folder = root[len(cfg.wiki_directory + "/"):]
+            url_ext = os.path.splitext(root[len(cfg.wiki_directory + "/"):] + "/" + item)
             if folder == "":
                 if item == cfg.homepage:
                     continue
-                url = os.path.splitext(
-                    root[len(cfg.wiki_directory + "/"):] + "/" + item)[0]
+                url = url_ext[0]
             else:
-                url = "/" + \
-                    os.path.splitext(
-                        root[len(cfg.wiki_directory + "/"):] + "/" + item)[0]
-
+                url = "/" + url_ext[0]
+            if url_ext[1] != ".md":
+              url += url_ext[1]
+            
             info = {'doc': item,
                     'url': url,
                     'folder': folder,
@@ -144,6 +144,20 @@ def list_wiki(folderpath):
     else:
         folder_list.sort(key=lambda x: (str(x["url"]).casefold()))
 
+    ### Filter out folders ###########################################
+    only_folders = list(set([i["folder"] for i in folder_list]))
+    only_folders_list = [
+        {
+          'doc': '',
+          'url': '',
+          'folder': folder,
+          'folder_url': folder,
+          'mtime': 0,
+        } for folder in only_folders
+    ]
+    remaining_files = list(filter(lambda file_link: file_link["folder"] == "" or file_link["folder"] == folderpath, folder_list))
+    folder_list = only_folders_list + remaining_files
+    print(only_folders)
     return render_template('list_files.html', list=folder_list, folder=folderpath, system=SYSTEM_SETTINGS)
 
 
