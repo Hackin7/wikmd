@@ -145,19 +145,24 @@ def list_wiki(folderpath):
         folder_list.sort(key=lambda x: (str(x["url"]).casefold()))
 
     ### Filter out folders ###########################################
-    only_folders = list(set([i["folder"] for i in folder_list]))
-    only_folders_list = [
-        {
+    only_folders_list = []
+    for root, subfolder, files in os.walk(requested_path):
+      if root[-1] == '/':
+          root = root[:-1]
+      for folder in subfolder:
+        folder_url = folderpath + "/" + folder
+        only_folders_list.append({
           'doc': '',
           'url': '',
           'folder': folder,
-          'folder_url': folder,
+          'folder_url': folder_url,
           'mtime': 0,
-        } for folder in only_folders
-    ]
+        })
+      break
+    only_folders_list.sort(key=lambda x: (str(x["url"]).casefold()))
     remaining_files = list(filter(lambda file_link: file_link["folder"] == "" or file_link["folder"] == folderpath, folder_list))
     folder_list = only_folders_list + remaining_files
-    print(only_folders)
+    
     return render_template('list_files.html', list=folder_list, folder=folderpath, system=SYSTEM_SETTINGS)
 
 
